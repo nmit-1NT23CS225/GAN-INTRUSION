@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>NIDS Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: white;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin: 20px;
+    border-radius: 15px;
+    width: 250px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+canvas {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Table styling */
+table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    background: #1e293b;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #334155;
+}
+
+th {
+    background: #020617;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🚨 NIDS Dashboard</h1>
+
+<div class="container">
+    <div class="card">
+        <h2>Accuracy</h2>
+        <p id="acc"></p>
+    </div>
+
+    <div class="card">
+        <h2>F1 Score</h2>
+        <p id="f1"></p>
+    </div>
+
+    <div class="card">
+        <h2>Speed</h2>
+        <p id="speed"></p>
+    </div>
+</div>
+
+<h2>📊 Class-wise Metrics</h2>
+<div id="metrics"></div>
+
+<h2>🔥 Confusion Matrix</h2>
+<div id="cmContainer"></div>
+
+<h2>📊 Attack Distribution</h2>
+<canvas id="distChart"></canvas>
+
+<h2>🧠 Model Info</h2>
+<div class="card">
+    <p><b>Model:</b> GAN + TCN</p>
+    <p><b>Dataset:</b> NSL-KDD</p>
+    <p><b>Task:</b> Intrusion Detection</p>
+</div>
+
+<script>
+
+// 👇 Injected by Cell 17
+const INJECT_ACC = null;
+const INJECT_F1 = null;
+const INJECT_SPEED = null;
+const INJECT_METRICS = null;
+const INJECT_CM = null;
+const INJECT_DIST = null;
+
+// Fill top metrics
+document.getElementById("acc").innerText = INJECT_ACC ? INJECT_ACC + "%" : "-";
+document.getElementById("f1").innerText = INJECT_F1 ?? "-";
+document.getElementById("speed").innerText = INJECT_SPEED ? INJECT_SPEED + " samples/sec" : "-";
+
+// Class metrics table
+if (INJECT_METRICS && INJECT_METRICS.length > 0) {
+    let html = "<table>";
+    html += "<tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1</th><th>Support</th></tr>";
+    
+    INJECT_METRICS.forEach(m => {
+        html += `<tr>
+            <td>${m.cls}</td>
+            <td>${m.prec}</td>
+            <td>${m.rec}</td>
+            <td>${m.f1}</td>
+            <td>${m.sup}</td>
+        </tr>`;
+    });
+
+    html += "</table>";
+    document.getElementById("metrics").innerHTML = html;
+}
+
+// Confusion Matrix (clean table)
+if (INJECT_CM && INJECT_CM.length > 0) {
+    let html = "<table>";
+
+    INJECT_CM.forEach(row => {
+        html += "<tr>";
+        row.forEach(val => {
+            html += `<td>${val}</td>`;
+        });
+        html += "</tr>";
+    });
+
+    html += "</table>";
+    document.getElementById("cmContainer").innerHTML = html;
+}
+
+// Attack Distribution Chart
+if (INJECT_DIST && Object.keys(INJECT_DIST).length > 0) {
+    const labels = Object.keys(INJECT_DIST);
+    const values = Object.values(INJECT_DIST);
+
+    new Chart(document.getElementById("distChart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Samples",
+                data: values
+            }]
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
